@@ -1,10 +1,11 @@
 
-import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { CreateCatDto, UpdateCatDto, ListAllEntities } from './create-cat.dto';
+import { Controller, Get, Query, Post, Body, Put, Param, Delete, UsePipes, ValidationPipe } from '@nestjs/common';
+import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto/create-cat.dto';
 
 @Controller('cats')
 export class CatsController {
   @Post()
+  @UsePipes(new ValidationPipe({whitelist:true}))
   create(@Body() createCatDto: CreateCatDto) {
     return 'This action adds a new cat';
   }
@@ -20,7 +21,11 @@ export class CatsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+  update(@Param('id') id: string, @Body(new ValidationPipe({
+    whitelist:true,
+    forbidNonWhitelisted:true,
+    groups:['update']
+  })) body: UpdateCatDto) {
     return `This action updates a #${id} cat`;
   }
 
